@@ -43,8 +43,11 @@ CODE_SAMPLE
             return NodeTraverser::REMOVE_NODE;
         }
 
-        if ($expr->var->name->parts && in_array('ray', $expr->var->name->parts)) {
-            return NodeTraverser::REMOVE_NODE;
+        // Handle method calls like ray()->pause()
+        if ($expr instanceof MethodCall && $expr->var instanceof FuncCall) {
+            if ($this->isName($expr->var->name, 'ray')) {
+                return NodeTraverser::REMOVE_NODE;
+            }
         }
 
         return null;
